@@ -129,6 +129,33 @@ module.exports = function(options) {
 		});
 	};
 
+	that.pushWithAttributes = function(name, message, attributes, callback) {
+		//attributes like {"category":"book","bookid":5492}
+
+		message = options.raw ? message : JSON.stringify(message);
+
+		name = namespace + name;
+		var payload = {
+			MessageBody: message
+		};
+
+		var attributeNames = Object.keys(attributes);
+
+		//sqs accepts only 10 attributes
+		attributeNames.splice(10);
+
+		attributeNames.forEach(function(attributeName, index) {
+			var baseName = "MessageAttribute." + (index + 1);
+			payload[baseName + ".Name"] = attributeName;
+			payload[baseName + ".Value.StringValue"] = attributes[attributeName];
+			payload[baseName + ".Value.DataType"] = typeof attributes[attributeName] == "number" ? "Number" : "String";
+		})
+
+		queueURL(name, function(url) {
+			retry(request, queryURL('SendMessage', url, payload), callback);
+		});
+	};
+
 	that.delete = that.del = function(name, callback) {
 		name = namespace+name;
 

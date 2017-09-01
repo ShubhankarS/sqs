@@ -29,6 +29,20 @@ queue.pull('test', function(message, callback) {
 	            // calling the callback will also delete the message from the queue
 });
 ```
+Use the following method add [SQS Message Attributes](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-attributes.html) to the message
+```js
+// push data to the 'test' queue with the message body as {some:"data"} 
+// The message has 2 message attributes as {"category":"book","bookid":5492}
+queue.pushWithAttributes('test', {
+	some:'data'
+}, {
+	category: "book",
+	bookid: 5492
+}, function() {
+	//complete
+});
+
+```
 
 ## API
 
